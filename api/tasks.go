@@ -21,15 +21,16 @@ import (
 func CreateTask(c *gin.Context) {
 	//创建一个service层的操作对象
 	creatTask := service.CreateTaskService{}
-	//jwt验证
-	chaim, _ := utils.ParseToken(c.GetHeader("Authorization"))
+	//从请求头部得到Authorization的值(用户登录创建的token值)传入进行jwt验证，该方法返回自定义的claim结构体和错误类型
+	claim, _ := utils.ParseToken(c.GetHeader("Authorization"))
+
 	if err := c.ShouldBind(&creatTask); err != nil {
-		res := creatTask.Create(chaim.Id)
-		c.JSON(200, res)
-	} else {
+		utils.LogrusObj.Info(err)
 		//返回的错误是参数校验的错误，需要对这个错误进行翻译
 		c.JSON(400, ErrorResponse(err))
-		utils.LogrusObj.Info(err)
+	} else {
+		res := creatTask.Create(claim.Id)
+		c.JSON(200, res)
 	}
 }
 
@@ -55,12 +56,15 @@ func DeleteTask(c *gin.Context) {
  **/
 func UpdateTask(c *gin.Context) {
 	UpdateTaskService := service.UpdateTaskService{}
+	//只有创作该task的人才有权限更新修改该task
+	_, _ = utils.ParseToken(c.GetHeader("Authorization"))
 	if err := c.ShouldBind(&UpdateTaskService); err != nil {
-		res := UpdateTaskService.Update(c.Param("id"))
-		c.JSON(200, res)
-	} else {
 		c.JSON(400, ErrorResponse(err))
 		utils.LogrusObj.Info(err)
+	} else {
+		//Param传过来的id是string类型
+		res := UpdateTaskService.Update(c.Param("id"))
+		c.JSON(200, res)
 	}
 }
 
@@ -75,11 +79,11 @@ func SearchTasks(c *gin.Context) {
 	searchTaskService := service.SearchTaskService{}
 	chaim, _ := utils.ParseToken(c.GetHeader("Authorization"))
 	if err := c.ShouldBind(&searchTaskService); err != nil {
-		res := searchTaskService.Search(chaim.Id)
-		c.JSON(200, res)
-	} else {
 		c.JSON(400, ErrorResponse(err))
 		utils.LogrusObj.Info(err)
+	} else {
+		res := searchTaskService.Search(chaim.Id)
+		c.JSON(200, res)
 	}
 }
 

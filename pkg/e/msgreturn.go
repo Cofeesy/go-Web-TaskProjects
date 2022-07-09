@@ -12,7 +12,7 @@ var MsgFlags = map[int]string{
 	ErrorDatabase:              "数据库操作出错，请重试",
 }
 
-//GetMsg 获取状态码对应信息
+//GetMsg 获取参数化的msg值
 func GetMsg(code int) string {
 	msg, ok := MsgFlags[code]
 	if ok {

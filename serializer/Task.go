@@ -7,7 +7,7 @@ type Task struct {
 	ID        uint   `json:"id" example:"1"`
 	Title     string `json:"title" example:"吃饭"`
 	Content   string `json:"content" example:"睡觉"`
-	View      uint64 `json:"view" example:"32"`
+	View      uint64 `json:"view" example:"32"` //浏览量
 	Status    int    `json:"status" example:"0"`
 	CreateAt  int64  `json:"createAt"`
 	StartTime int64  `json:"startTime"`
@@ -24,9 +24,10 @@ type Task struct {
 func BuildTask(item model.Task) Task {
 	// 构造数据模型
 	return Task{
-		ID:        item.ID,
-		Title:     item.Title,
-		Content:   item.Content,
+		ID:      item.ID,
+		Title:   item.Title,
+		Content: item.Content,
+		//View: item.View(),
 		Status:    item.Status,
 		StartTime: item.StartTime,
 		EndTime:   item.EndTime,

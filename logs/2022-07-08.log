@@ -1,0 +1,1 @@
+time="2022-07-08 14:18:51" level=info msg="Error 1062: Duplicate entry '张三峰' for key 'user.user_name'"

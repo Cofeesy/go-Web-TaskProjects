@@ -15,8 +15,8 @@ import (
 
 //创建任务的服务
 type CreateTaskService struct {
-	Title   string `json:"title" form:"title"`
-	Content string `json:"content" form:"content"`
+	Title   string `json:"title" form:"title" binding:"required,min=2,max=100"`
+	Content string `json:"content" form:"content" binding:"max=1000"`
 	Status  int    `json:"status" form:"status"`
 }
 
@@ -31,15 +31,15 @@ type DeleteTaskService struct {
 //更新任务的服务
 type UpdateTaskService struct {
 	ID      uint   `json:"ID" form:"id"`
-	Title   string `json:"title" form:"title"`
-	Content string `json:"content" form:"content"`
+	Title   string `json:"title" form:"title" binding:"required,min=2,max=100"`
+	Content string `json:"content" form:"content"  binding:"max=1000"`
 	Status  int    `json:"status" form:"status"`
 }
 
 //分页返回的服务
 type ListTasksService struct {
-	Limit int `json:"limit" form:"limit"`
-	Start int `json:"start" form:"limit"`
+	Size int `json:"size" form:"size"`
+	Page int `json:"page" form:"page"`
 }
 
 type SearchTaskService struct {
@@ -68,10 +68,11 @@ func (service *CreateTaskService) Create(id uint) serializer.Response {
 	err := model.DB.Create(&task).Error
 	//err不为空，返回错误
 	if err != nil {
+		utils.LogrusObj.Info(err)
 		code = e.ErrorDatabase
 		return serializer.Response{
 			Status: code,
-			Msg:    "创建备忘录失败",
+			Msg:    e.GetMsg(code),
 			Error:  err.Error(),
 		}
 	}
@@ -153,7 +154,7 @@ func (service *UpdateTaskService) Update(id string) serializer.Response {
 
 /**
  * @Title search
- * @Description //TODO
+ * @Description //通过传进来的用户id
  * @Author Cofeesy 18:40 2022/6/27
  * @Param Uid uint
  * @Return serializer.Response
@@ -162,8 +163,9 @@ func (service *SearchTaskService) Search(Uid uint) serializer.Response {
 	var tasks []model.Task
 	code := e.SUCCESS
 	model.DB.Where("Uid=?", Uid).Preload("User").First(&tasks)
-	err := model.DB.Model(&model.Task{}).Where("title LIKE ? OR content LIKE?",
-		"%"+service.Info+"%"+service.Info+"%").Find(&tasks).Error
+	//模糊查询
+	err := model.DB.Model(&model.Task{}).Where("title LIKE ? OR content LIKE ? ",
+		"%"+service.Info+"%", "%"+service.Info+"%").Find(&tasks).Error
 	if err != nil {
 		utils.LogrusObj.Info(err)
 		code = e.ErrorDatabase
@@ -212,19 +214,26 @@ func (service *ShowTaskService) Show(id string) serializer.Response {
 
 /**
  * @Title List
- * @Description //TODO
+ * @Description //分页返回(使用偏移量的表示法达到分页效果)
  * @Author Cofeesy 0:04 2022/6/27
  * @Param id int
  * @Return serializer.Response
  **/
 func (service *ListTasksService) List(id uint) serializer.Response {
+	//创建的需要从数据库绑定到go语言的Task结构体
 	var tasks []model.Task
+	//创建的需要从数据库按行读取的绑定的总数total
 	var total int64
-	//
-	if service.Limit == 0 {
-		service.Limit = 15
+	//1.默认参数
+	if service.Size <= 0 {
+		service.Size = 15
 	}
+	if service.Page <= 1 {
+		service.Page = 1
+	}
+	//全部搜索量
 	model.DB.Model(model.Task{}).Preload("User").Where("uid=?", id).Count(&total).
-		Limit(service.Limit).Offset((service.Start - 1) * service.Limit).Find(&tasks)
+		//偏移量的数据
+		Limit(service.Size).Offset((service.Page - 1) * service.Size).Find(&tasks)
 	return serializer.BuildListResponse(serializer.BuildTasks(tasks), uint(total))
 }

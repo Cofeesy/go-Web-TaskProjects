@@ -38,7 +38,7 @@ func NewRoouter() *gin.Engine {
 			authored.GET("task/:id", api.ShowTask)
 			//查看多个任务
 			authored.GET("tasks", api.ListTasks)
-			//删除一个任务
+			//删除一个任务-->硬删除
 			authored.DELETE("task/:id", api.DeleteTask)
 			//更新一个任务
 			authored.PUT("task/:id", api.UpdateTask)

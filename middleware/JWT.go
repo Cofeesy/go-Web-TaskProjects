@@ -21,16 +21,15 @@ import (
  **/
 func JWT() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		code := 200
-		var data interface{}
+		code := e.SUCCESS
 		token := c.GetHeader("Authorization")
 		if token == "" {
 			code = 404
 		} else {
-			claim, err := utils.ParseToken(token)
+			claims, err := utils.ParseToken(token)
 			if err != nil {
 				code = e.ErrorAuthCheckTokenFail //无权限
-			} else if time.Now().Unix() > claim.ExpiresAt {
+			} else if time.Now().Unix() > claims.ExpiresAt {
 				code = e.ErrorAuthCheckTokenTimeout //过期无效token
 			}
 		}
@@ -38,7 +37,6 @@ func JWT() gin.HandlerFunc {
 			c.JSON(400, gin.H{
 				"Status": code,
 				"msg":    e.GetMsg(code),
-				"data":   data,
 			})
 			c.Abort()
 			return

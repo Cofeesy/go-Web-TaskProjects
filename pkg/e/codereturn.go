@@ -1,5 +1,6 @@
 package e
 
+//错误常量
 const (
 	SUCCESS       = 200
 	ERROR         = 500

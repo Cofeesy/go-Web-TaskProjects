@@ -17,10 +17,10 @@ func UserRigister(c *gin.Context) {
 	//创建一个UserService实例,调用service层的Register()方法
 	var userRegister service.UserService
 	if err := c.ShouldBind(&userRegister); err != nil {
+		c.JSON(400, ErrorResponse(err))
+	} else {
 		res := userRegister.Register()
 		c.JSON(200, res)
-	} else {
-		c.JSON(400, ErrorResponse(err))
 	}
 }
 
@@ -35,9 +35,9 @@ func UserRigister(c *gin.Context) {
 func UserLogin(c *gin.Context) {
 	var userLogin service.UserService
 	if err := c.ShouldBind(&userLogin); err != nil {
-		res := userLogin.Register()
-		c.JSON(200, res)
-	} else {
 		c.JSON(400, ErrorResponse(err))
+	} else {
+		res := userLogin.Login()
+		c.JSON(200, res)
 	}
 }

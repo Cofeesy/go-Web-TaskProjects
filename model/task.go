@@ -5,7 +5,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-//Task
+//Task 任务模型
 type Task struct {
 	gorm.Model
 	User      User   `gorm:"ForeignKey:Uid"` //创建该任务的用户；逻辑外键，在数据库中不显示
@@ -22,4 +22,11 @@ func (Task *Task) ViewAdd() uint64{
 	countStr,_:=cache.RedisClient.Get(cache.TaskViewKey(Task.ID)).Result()
 	count,_:strconv.ParseUint(countStr,10,64)
 	return count
-}*/
+}
+*/
+
+/*
+func (Task *Task)AddView()  {
+
+}
+*/

@@ -2,15 +2,17 @@ package utils
 
 import (
 	"github.com/dgrijalva/jwt-go"
+	"os"
 	"time"
 )
 
 //用于加密的字符串
-var JWTSECRET = []byte("JWT_SECRET")
+var JWTSECRET = []byte(os.Getenv("JWT_SECRET"))
 
 type Claims struct {
-	Id       uint   `json:"id"`
-	UserName string `json:"user_name"`
+	Id        uint   `json:"id"`
+	UserName  string `json:"user_name"`
+	Authority int    `json:"authority"`
 	jwt.StandardClaims
 }
 
@@ -21,15 +23,16 @@ type Claims struct {
  * @Param id uint, username string ”将用户的名字输入作为自定义结构体一部分“
  * @return string,error ”“
  **/
-func GenToken(id uint, username string) (string, error) {
+func GenToken(id uint, username string, authority int) (string, error) {
 	//获取当前时间
 	nowTime := time.Now()
 	//设置token有效时间
 	expiredTime := nowTime.Add(24 * time.Minute)
 	//自定义结构体，包含jwt.StandardClaims
 	claims := Claims{
-		Id:       id,
-		UserName: username,
+		Id:        id,
+		UserName:  username,
+		Authority: authority,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expiredTime.Unix(),  //token过期时间，为时间戳（Unix()）
 			Issuer:    "memorandumProject", //签发人
@@ -57,9 +60,6 @@ func ParseToken(token string) (*Claims, error) {
 		//token, err := jwt.Parse(tokenString, func(token *jwt.Token) (i interface{}, err error) {
 		return JWTSECRET, nil
 	})
-	if err != nil {
-		return nil, err
-	}
 	// 对token对象中的Claim进行类型断言
 	if claims, ok := tokenClaims.Claims.(*Claims); ok && tokenClaims.Valid { // 校验token
 		return claims, nil

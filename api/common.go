@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/go-playground/validator/v10"
+	"log"
 	"memorandumProject/i18n"
 	"memorandumProject/serializer"
 )
@@ -36,6 +37,7 @@ func ErrorResponse(err error) serializer.Response {
 			Error:  fmt.Sprint(err),
 		}
 	}
+	log.Println(err)
 	return serializer.Response{
 		Status: 40001,
 		Msg:    "参数错误",
