@@ -22,6 +22,7 @@ import (
 func JWT() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		code := e.SUCCESS
+		//从请求头中的Authorization获取token值
 		token := c.GetHeader("Authorization")
 		if token == "" {
 			code = 404

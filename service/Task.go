@@ -204,7 +204,7 @@ func (service *ShowTaskService) Show(id string) serializer.Response {
 		}
 	}
 	//增加点击量
-	//task.Addview()
+	task.AddView()
 	return serializer.Response{
 		Status: code,
 		Data:   serializer.BuildTask(task),

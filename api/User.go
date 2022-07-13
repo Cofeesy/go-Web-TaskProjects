@@ -31,7 +31,6 @@ func UserRigister(c *gin.Context) {
  * @Param c *gin.Context
  * @Return
  **/
-
 func UserLogin(c *gin.Context) {
 	var userLogin service.UserService
 	if err := c.ShouldBind(&userLogin); err != nil {

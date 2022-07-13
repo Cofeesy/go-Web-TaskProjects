@@ -27,10 +27,11 @@ func init() {
 
 	//实例化一个logger
 	logger := logrus.New()
+	//该函数返回一个打开的文件
 	src, _ := setOutPutFile()
-	//设置输出
+	//设置日志输出文件
 	logger.Out = src
-	//设置日志级别
+	//设置记录日志的级别
 	logger.SetLevel(logrus.DebugLevel)
 	//设置日志格式
 	logger.SetFormatter(&logrus.TextFormatter{
@@ -49,6 +50,7 @@ func init() {
 func setOutPutFile() (*os.File, error) {
 	now := time.Now()
 	logFilePath := ""
+	//Getwd()函数返回根路径的name
 	if dir, err := os.Getwd(); err == nil {
 		logFilePath = dir + "/logs/"
 	}
