@@ -2,7 +2,6 @@ package config
 
 import (
 	"gopkg.in/ini.v1"
-	"memorandumProject/cache"
 	"memorandumProject/model"
 	"memorandumProject/pkg/utils"
 	"strings"
@@ -39,7 +38,6 @@ func Init() {
 
 	dsn := strings.Join([]string{DbUser, ":", DbPassword, "@tcp(", DbHost, ":", DbPort, ")/", DbName, "?charset=utf8mb4&parseTime=True&loc=Local"}, "")
 	model.Database(dsn)
-	cache.ConnRedis()
 
 }
 
